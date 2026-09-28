@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nueva reserva de laboratorio</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" />
+</head>
+<body>
+<main class="contenedor contenedor-estrecho">
+
+    <header class="cabecera">
+        <div>
+            <h1>Nueva reserva</h1>
+            <p class="subtitulo">Completa los datos de la solicitud.</p>
+        </div>
+    </header>
+
+    <div class="alerta alerta-error" role="alert" th:if="${mensajeError}" th:text="${mensajeError}">
+        Ha ocurrido un error.
+    </div>
+
+    <form class="formulario" method="post" th:action="@{/reservas}" th:object="${reservaFormulario}">
+
+        <div class="alerta alerta-error" role="alert" th:if="${#fields.hasAnyErrors()}">
+            <p class="alerta-titulo">Revisa los siguientes datos:</p>
+            <ul class="lista-errores">
+                <li th:each="err : ${#fields.allErrors()}" th:text="${err}">Detalle del error.</li>
+            </ul>
+        </div>
+
+        <div class="campo">
+            <label for="laboratorioId">Laboratorio</label>
+            <select id="laboratorioId" th:field="*{laboratorioId}" th:errorclass="campo-invalido">
+                <option value="">Selecciona un laboratorio</option>
+                <option th:each="lab : ${laboratorios}"
+                        th:value="${lab.id}"
+                        th:text="|${lab.nombre} — ${lab.ubicacion} (${lab.capacidad})|">Laboratorio</option>
+            </select>
+        </div>
+
+        <div class="campo">
+            <label for="nombreSolicitante">Nombre del solicitante</label>
+            <input id="nombreSolicitante" type="text" maxlength="120" autocomplete="name"
+                   th:field="*{nombreSolicitante}" th:errorclass="campo-invalido" />
+        </div>
+
+        <div class="campo">
+            <label for="correoSolicitante">Correo electrónico</label>
+            <input id="correoSolicitante" type="email" maxlength="160" autocomplete="email"
+                   th:field="*{correoSolicitante}" th:errorclass="campo-invalido" />
+        </div>
+
+        <div class="campo-doble">
+            <div class="campo">
+                <label for="inicio">Inicio</label>
+                <input id="inicio" type="datetime-local"
+                       th:field="*{inicio}" th:errorclass="campo-invalido" />
+            </div>
+            <div class="campo">
+                <label for="fin">Fin</label>
+                <input id="fin" type="datetime-local"
+                       th:field="*{fin}" th:errorclass="campo-invalido" />
+            </div>
+        </div>
+
+        <p class="ayuda" th:with="reglas=${reglasDeReserva}"
+           th:text="|Horario de atención: ${reglas.horaApertura} a ${reglas.horaCierre}. La reserva dura entre ${reglas.duracionMinimaMinutos} minutos y ${reglas.duracionMaximaHoras} horas y debe empezar y terminar el mismo día.|">
+            Horario de atención: 07:00 a 21:00.</p>
+
+        <div class="acciones">
+            <button class="boton boton-primario" type="submit">Guardar reserva</button>
+            <a class="boton" th:href="@{/reservas}">Volver</a>
+        </div>
+
+    </form>
+
+</main>
+</body>
+</html>

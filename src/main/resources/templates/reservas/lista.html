@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reservas de laboratorios</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}" />
+</head>
+<body>
+<main class="contenedor">
+
+    <header class="cabecera">
+        <div>
+            <h1>Reservas de laboratorios</h1>
+            <p class="subtitulo">Listado de solicitudes registradas en el sistema.</p>
+        </div>
+        <a class="boton boton-primario" th:href="@{/reservas/nueva}">Nueva reserva</a>
+    </header>
+
+    <div class="alerta alerta-exito" role="status" th:if="${mensajeExito}" th:text="${mensajeExito}">
+        Operación realizada.
+    </div>
+    <div class="alerta alerta-error" role="alert" th:if="${mensajeError}" th:text="${mensajeError}">
+        Ha ocurrido un error.
+    </div>
+
+    <div class="tabla-envoltorio">
+        <table class="tabla">
+            <caption class="tabla-titulo">Reservas ordenadas por fecha de inicio</caption>
+            <thead>
+            <tr>
+                <th scope="col">Laboratorio</th>
+                <th scope="col">Solicitante</th>
+                <th scope="col">Correo</th>
+                <th scope="col">Inicio</th>
+                <th scope="col">Fin</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(reservas)}">
+                <td class="celda-vacia" colspan="7">Aún no hay reservas registradas</td>
+            </tr>
+            <tr th:each="reserva : ${reservas}">
+                <td th:text="${reserva.laboratorio}">Lab Cómputo 1</td>
+                <td th:text="${reserva.solicitante}">Ana Pérez</td>
+                <td th:text="${reserva.correo}">ana@universidad.edu</td>
+                <td th:text="${reserva.inicio}">01/01/2026 08:00</td>
+                <td th:text="${reserva.fin}">01/01/2026 10:00</td>
+                <td>
+                    <span class="estado"
+                          th:classappend="${'estado-' + #strings.toLowerCase(reserva.estado)}"
+                          th:text="${reserva.estado}">ACTIVA</span>
+                </td>
+                <td class="celda-acciones">
+                    <form method="post"
+                          th:if="${reserva.cancelable}"
+                          th:action="@{/reservas/{id}/cancelar(id=${reserva.id})}">
+                        <button class="boton boton-peligro" type="submit"
+                                th:aria-label="|Cancelar la reserva de ${reserva.solicitante} en ${reserva.laboratorio}|">Cancelar</button>
+                    </form>
+                    <span class="sin-acciones" th:unless="${reserva.cancelable}">Sin acciones</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+</body>
+</html>
